@@ -1,0 +1,39 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: "Modelo teste Hands-on"
+Mappings: 
+  RegionMap: 
+    us-east-1:
+      HVM64: ami-04823729c75214919
+    sa-east-1:
+      HVM64: ami-0067426490ba8326f
+  SubnetMap:
+    us-east-1:
+      SUBNET: subnet-039b6ccb849016085
+    sa-east-1:
+      SUBNET: subnet-02904a4f3eba254ae
+
+Parameters:
+  InstanceName:
+    Type: String
+    Default: "HandsOn"
+    Description: "Nome da instância"
+
+  InstanceType:
+    Type: String
+    Default: "t3.micro"
+    Description: "Tipo de instância para criar sua EC2"
+
+Resources: 
+  myEC2Instance: 
+    Type: "AWS::EC2::Instance"
+    Properties: 
+      ImageId: !FindInMap [RegionMap, !Ref "AWS::Region", HVM64]
+      InstanceType: !Ref InstanceType
+      SubnetId: !FindInMap [SubnetMap, !Ref "AWS::Region", SUBNET]
+      Tags:
+        - Key: "Name"
+          Value: !Ref InstanceName
+
+Outputs:
+  Ec2PrivateIp:
+    Value: !GetAtt myEC2Instance.PrivateIp

@@ -1,0 +1,46 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: "Modelo teste Hands-on"
+Transform:
+  - Replication-Macro
+Mappings: 
+  RegionMap: 
+    us-east-1:
+      HVM64: ami-04823729c75214919
+    sa-east-1:
+      HVM64: ami-0067426490ba8326f
+  SubnetMap:
+    us-east-1:
+      SUBNET: subnet-039b6ccb849016085
+    sa-east-1:
+      SUBNET: subnet-02904a4f3eba254ae
+
+Parameters:
+  pInstanceName:
+    Type: String
+    Default: "HandsOn"
+    Description: "Nome da instância"
+
+  pInstanceType:
+    Type: String
+    Default: "t3.micro, t2.micro"
+    Description: "Tipo de instância para criar sua EC2"
+
+Resources: 
+  rMyEC2Instance: 
+    Type: "AWS::EC2::Instance"
+    Properties: 
+      ReplicateWith:
+        InstanceType: pInstanceType
+      ImageId: !FindInMap [RegionMap, !Ref "AWS::Region", HVM64]
+      SubnetId: !FindInMap [SubnetMap, !Ref "AWS::Region", SUBNET]
+      Tags:
+        - Key: "Name"
+          Value: !Ref pInstanceName
+
+# Se colocar mais de duas instâncias, não terão outros Outputs pq deixei manual
+Outputs:
+  Instance1:
+    Value: !GetAtt rMyEC2Instance1.PrivateIp
+
+  Instance2:
+    Value: !GetAtt rMyEC2Instance2.PrivateIp
