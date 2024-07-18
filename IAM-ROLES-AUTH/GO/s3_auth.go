@@ -73,7 +73,11 @@ func S3Client() *s3.Client {
 }
 
 func DocHelp() {
-	doc := `	Parâmetros:
+	doc := `	Dependências:
+		go get github.com/aws/aws-sdk-go-v2
+		go get github.com/aws/aws-sdk-go-v2/config
+		go get github.com/aws/aws-sdk-go-v2/service/s3
+	Parâmetros:
 		--create    --> Cria o Bucket com o nome e região especificados
 		--delbkt    --> Deleta um Bucket vazio
 		--del       --> Deleta objetos no Bucket
@@ -107,9 +111,9 @@ func ListBuckets(s3_client *s3.Client) {
 func AwsCreateBucket(s3_client *s3.Client, bucketName string, bucketRegion string) {
 	resposta, err := s3_client.CreateBucket(context.TODO(), &s3.CreateBucketInput{
 		Bucket: aws.String(bucketName),
-		CreateBucketConfiguration: &s3.CreateBucketConfiguration{
-			LocationConstraint: bucketRegion,
-		},
+		// CreateBucketConfiguration: &s3.CreateBucketConfiguration{
+		// 	LocationConstraint: s3.BucketLocationConstraint(bucketRegion),
+		// },
 	})
 
 	if err != nil {
