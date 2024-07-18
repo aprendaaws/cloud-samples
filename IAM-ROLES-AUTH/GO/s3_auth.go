@@ -21,18 +21,20 @@ func main() {
 		if len(os.Args) != 4 {
 			fmt.Println(msg)
 		} else {
-			//AwsCreateBucket(S3Client(), os.Args[2], os.Args[3])
+			AwsCreateBucket(S3Client(), os.Args[2], os.Args[3])
 		}
 	case "--delbkt":
 		if len(os.Args) != 4 {
 			fmt.Println(msg)
+		} else {
+			AwsDeleteBucket(S3Client(), os.Args[2], os.Args[3])
 		}
-		// awsDeleteBucket(os.Args[2], os.Args[3])
 	case "--del":
 		if len(os.Args) != 4 {
 			fmt.Println(msg)
+		} else {
+			//AwsDeleteObject(S3Client(), os.Args[2], os.Args[3])
 		}
-		// awsDeleteObject(os.Args[2], os.Args[3])
 	case "--listbkts":
 		ListBuckets(S3Client())
 	case "--list":
@@ -120,14 +122,22 @@ func AwsCreateBucket(s3_client *s3.Client, bucketName string, bucketRegion strin
 	if err != nil {
 		fmt.Println("Falha ao criar o bucket: ", err)
 	} else {
-		fmt.Println("Bucket", bucketName, "criado com sucesso")
+		fmt.Println("Bucket", bucketName, "criado com sucesso!")
 	}
 
 }
 
-// func AwsDeleteBucket(bucketName, bucketRegion string) {
-//
-// }
+func AwsDeleteBucket(s3_client *s3.Client, bucketName string, bucketRegion string) {
+	_, err := s3_client.DeleteBucket(context.TODO(), &s3.DeleteBucketInput{
+		Bucket: aws.String(bucketName),
+	})
+
+	if err != nil {
+		fmt.Println("Falha ao deletar o bucket: ", err)
+	} else {
+		fmt.Println("Bucket", bucketName, "deletado com sucesso!")
+	}
+}
 
 // func AwsDeleteObject(bucketName, objectName string) {
 //
