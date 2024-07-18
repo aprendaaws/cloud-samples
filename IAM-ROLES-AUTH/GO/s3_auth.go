@@ -14,27 +14,18 @@ import (
 func main() {
 	msg := "Número inválido de parâmetros!"
 
+	if len(os.Args) != 4 {
+		fmt.Println(msg)
+
 	switch os.Args[1] {
 	case "--help":
 		DocHelp()
 	case "--create":
-		if len(os.Args) != 4 {
-			fmt.Println(msg)
-		} else {
-			AwsCreateBucket(S3Client(), os.Args[2], os.Args[3])
-		}
+		CreateBucket(S3Client(), os.Args[2], os.Args[3])
 	case "--delbkt":
-		if len(os.Args) != 4 {
-			fmt.Println(msg)
-		} else {
-			AwsDeleteBucket(S3Client(), os.Args[2], os.Args[3])
-		}
+		DeleteBucket(S3Client(), os.Args[2], os.Args[3])
 	case "--del":
-		if len(os.Args) != 4 {
-			fmt.Println(msg)
-		} else {
-			//AwsDeleteObject(S3Client(), os.Args[2], os.Args[3])
-		}
+		//AwsDeleteObject(S3Client(), os.Args[2], os.Args[3])
 	case "--listbkts":
 		ListBuckets(S3Client())
 	case "--list":
@@ -111,7 +102,7 @@ func ListBuckets(s3_client *s3.Client) {
 	}
 }
 
-func AwsCreateBucket(s3_client *s3.Client, bucketName string, bucketRegion string) {
+func CreateBucket(s3_client *s3.Client, bucketName string, bucketRegion string) {
 	_, err := s3_client.CreateBucket(context.TODO(), &s3.CreateBucketInput{
 		Bucket: aws.String(bucketName),
 		CreateBucketConfiguration: &types.CreateBucketConfiguration{
@@ -127,7 +118,7 @@ func AwsCreateBucket(s3_client *s3.Client, bucketName string, bucketRegion strin
 
 }
 
-func AwsDeleteBucket(s3_client *s3.Client, bucketName string, bucketRegion string) {
+func DeleteBucket(s3_client *s3.Client, bucketName string, bucketRegion string) {
 	_, err := s3_client.DeleteBucket(context.TODO(), &s3.DeleteBucketInput{
 		Bucket: aws.String(bucketName),
 	})
@@ -139,6 +130,6 @@ func AwsDeleteBucket(s3_client *s3.Client, bucketName string, bucketRegion strin
 	}
 }
 
-// func AwsDeleteObject(bucketName, objectName string) {
+// func DeleteObject(bucketName, objectName string) {
 //
 // }
