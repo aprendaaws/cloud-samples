@@ -12,11 +12,6 @@ import (
 )
 
 func main() {
-	msg := "Número inválido de parâmetros!"
-
-	if len(os.Args) != 4 {
-		fmt.Println(msg)
-
 	switch os.Args[1] {
 	case "--help":
 		DocHelp()
@@ -29,25 +24,16 @@ func main() {
 	case "--listbkts":
 		ListBuckets(S3Client())
 	case "--list":
-		if len(os.Args) == 4 {
-			// awsListObjects(os.Args[2])
-		} else {
-			fmt.Println(msg)
-		}
+		// awsListObjects(os.Args[2])
 	case "--upload":
-		if len(os.Args) != 4 {
-			fmt.Println(msg)
-		}
 		// awsUploadObject(os.Args[2], os.Args[3])
 	case "--download":
-		if len(os.Args) != 4 {
-			fmt.Println(msg)
-		}
 		// awsDownloadObject(os.Args[2], os.Args[3])
 	default:
 		fmt.Println("Parâmetro Inválido!")
 		DocHelp()
 	}
+
 }
 
 func SdkAuth() aws.Config {
