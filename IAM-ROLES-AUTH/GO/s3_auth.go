@@ -25,7 +25,7 @@ func main() {
 	case "--delbkt":
 		DeleteBucket(S3Client(), os.Args[2], os.Args[3])
 	case "--del":
-		//AwsDeleteObject(S3Client(), os.Args[2], os.Args[3])
+		DeleteObject(S3Client(), os.Args[2], os.Args[3])
 	case "--listbkts":
 		ListBuckets(S3Client())
 	case "--list":
@@ -130,6 +130,6 @@ func DeleteBucket(s3_client *s3.Client, bucketName string, bucketRegion string) 
 	}
 }
 
-// func DeleteObject(bucketName, objectName string) {
-//
-// }
+func DeleteObject(s3_client *s3.Client, bucketName string, objectName string) {
+	fmt.Println("Em desenvolvimento...")
+}
