@@ -8,6 +8,7 @@ import (
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/config"
 	"github.com/aws/aws-sdk-go-v2/service/s3"
+	"github.com/aws/aws-sdk-go-v2/service/s3/types"
 )
 
 func main() {
@@ -17,36 +18,36 @@ func main() {
 	case "--help":
 		DocHelp()
 	case "--create":
-		if len(os.Args) != 3 {
+		if len(os.Args) != 4 {
 			fmt.Println(msg)
+		} else {
+			//AwsCreateBucket(S3Client(), os.Args[2], os.Args[3])
 		}
-
-		AwsCreateBucket(S3Client(), os.Args[2], os.Args[3])
 	case "--delbkt":
-		if len(os.Args) != 3 {
+		if len(os.Args) != 4 {
 			fmt.Println(msg)
 		}
 		// awsDeleteBucket(os.Args[2], os.Args[3])
 	case "--del":
-		if len(os.Args) != 3 {
+		if len(os.Args) != 4 {
 			fmt.Println(msg)
 		}
 		// awsDeleteObject(os.Args[2], os.Args[3])
 	case "--listbkts":
 		ListBuckets(S3Client())
 	case "--list":
-		if len(os.Args) == 2 {
+		if len(os.Args) == 4 {
 			// awsListObjects(os.Args[2])
 		} else {
 			fmt.Println(msg)
 		}
 	case "--upload":
-		if len(os.Args) != 2 {
+		if len(os.Args) != 4 {
 			fmt.Println(msg)
 		}
 		// awsUploadObject(os.Args[2], os.Args[3])
 	case "--download":
-		if len(os.Args) != 3 {
+		if len(os.Args) != 4 {
 			fmt.Println(msg)
 		}
 		// awsDownloadObject(os.Args[2], os.Args[3])
@@ -109,18 +110,19 @@ func ListBuckets(s3_client *s3.Client) {
 }
 
 func AwsCreateBucket(s3_client *s3.Client, bucketName string, bucketRegion string) {
-	resposta, err := s3_client.CreateBucket(context.TODO(), &s3.CreateBucketInput{
+	_, err := s3_client.CreateBucket(context.TODO(), &s3.CreateBucketInput{
 		Bucket: aws.String(bucketName),
-		// CreateBucketConfiguration: &s3.CreateBucketConfiguration{
-		// 	LocationConstraint: s3.BucketLocationConstraint(bucketRegion),
-		// },
+		CreateBucketConfiguration: &types.CreateBucketConfiguration{
+			LocationConstraint: types.BucketLocationConstraint(bucketRegion),
+		},
 	})
 
 	if err != nil {
 		fmt.Println("Falha ao criar o bucket: ", err)
+	} else {
+		fmt.Println("Bucket", bucketName, "criado com sucesso")
 	}
 
-	fmt.Println(resposta)
 }
 
 // func AwsDeleteBucket(bucketName, bucketRegion string) {
