@@ -26,7 +26,8 @@ func main() {
 	case "--list":
 		ListObjects(S3Client("us-east-1"), os.Args[2], os.Args[3])
 	case "--upload":
-		// awsUploadObject(os.Args[2], os.Args[3])
+		fmt.Println(os.Args[2], os.Args[3], os.Args[4])
+		UploadObject(S3Client("us-east-1"), os.Args[2], os.Args[3], os.Args[4])
 	case "--download":
 		// awsDownloadObject(os.Args[2], os.Args[3])
 	default:
@@ -143,5 +144,25 @@ func DeleteObject(s3_client *s3.Client, bucketName string, objectName string) {
 		fmt.Printf("Falha ao deletar o objeto %s no Bucket %s: %s\n", objectName, bucketName, err)
 	} else {
 		fmt.Printf("O objeto %s foi deletado com sucesso no Bucket %s\n", objectName, bucketName)
+	}
+}
+
+func UploadObject(s3_client *s3.Client, bucketName string, objectPath string, fileName string) {
+	fileContent, err := os.Open(fileName)
+
+	if err != nil {
+		fmt.Println("Erro ao ler o arquivo:", err)
+	}
+
+	_, err = s3_client.PutObject(context.TODO(), &s3.PutObjectInput{
+		Bucket: aws.String(bucketName),
+		Key:    aws.String(objectPath + fileName),
+		Body:   fileContent,
+	})
+
+	if err != nil {
+		fmt.Printf("Falha ao carregar o objeto %s no Bucket %s: %s\n", objectPath+fileName, bucketName, err)
+	} else {
+		fmt.Printf("O objeto %s foi carregado com sucesso no Bucket %s\n", objectPath+fileName, bucketName)
 	}
 }
