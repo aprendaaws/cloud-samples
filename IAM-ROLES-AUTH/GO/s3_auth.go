@@ -16,15 +16,15 @@ func main() {
 	case "--help":
 		DocHelp()
 	case "--create":
-		CreateBucket(S3Client(), os.Args[2], os.Args[3])
+		CreateBucket(S3Client(os.Args[3]), os.Args[2], os.Args[3])
 	case "--delbkt":
-		DeleteBucket(S3Client(), os.Args[2], os.Args[3])
+		DeleteBucket(S3Client(os.Args[3]), os.Args[2], os.Args[3])
 	case "--del":
-		DeleteObject(S3Client(), os.Args[2], os.Args[3])
+		DeleteObject(S3Client(os.Args[3]), os.Args[2], os.Args[3])
 	case "--listbkts":
-		ListBuckets(S3Client())
+		ListBuckets(S3Client(os.Args[2]))
 	case "--list":
-		// awsListObjects(os.Args[2])
+		ListObjects(S3Client(os.Args[3]), os.Args[2], os.Args[3])
 	case "--upload":
 		// awsUploadObject(os.Args[2], os.Args[3])
 	case "--download":
@@ -36,18 +36,18 @@ func main() {
 
 }
 
-func SdkAuth() aws.Config {
-	cfg, err := config.LoadDefaultConfig(context.TODO())
+func SdkAuth(bucketRegion string) aws.Config {
+	cfg, err := config.LoadDefaultConfig(context.TODO(), config.WithRegion(bucketRegion))
 
 	if err != nil {
-		fmt.Println("Erro ao autenticar", err)
+		fmt.Println("Erro ao tentar autenticar:", err)
 	}
 
 	return cfg
 }
 
-func S3Client() *s3.Client {
-	s3_client := s3.NewFromConfig(SdkAuth())
+func S3Client(bucketRegion string) *s3.Client {
+	s3_client := s3.NewFromConfig(SdkAuth(bucketRegion))
 
 	return s3_client
 }
@@ -76,18 +76,6 @@ func DocHelp() {
 	fmt.Println(doc)
 }
 
-func ListBuckets(s3_client *s3.Client) {
-	resposta, err := s3_client.ListBuckets(context.TODO(), &s3.ListBucketsInput{})
-
-	if err != nil {
-		fmt.Println("Falha ao listar os buckets", err)
-	}
-
-	for _, bucket := range resposta.Buckets {
-		fmt.Println(*bucket.Name)
-	}
-}
-
 func CreateBucket(s3_client *s3.Client, bucketName string, bucketRegion string) {
 	_, err := s3_client.CreateBucket(context.TODO(), &s3.CreateBucketInput{
 		Bucket: aws.String(bucketName),
@@ -114,6 +102,33 @@ func DeleteBucket(s3_client *s3.Client, bucketName string, bucketRegion string) 
 	} else {
 		fmt.Println("Bucket", bucketName, "deletado com sucesso!")
 	}
+}
+
+func ListBuckets(s3_client *s3.Client) {
+	resposta, err := s3_client.ListBuckets(context.TODO(), &s3.ListBucketsInput{})
+
+	if err != nil {
+		fmt.Println("Falha ao listar os buckets", err)
+	}
+
+	for _, bucket := range resposta.Buckets {
+		fmt.Println(*bucket.Name)
+	}
+}
+
+func ListObjects(s3_client *s3.Client, bucketName string, prefixName string) {
+	resposta, err := s3_client.ListObjectsV2(context.TODO(), &s3.ListObjectsV2Input{
+		Bucket: aws.String(bucketName),
+		Prefix: aws.String(prefixName),
+	})
+
+	if err != nil {
+		fmt.Println("Falha ao listar os objetos em ", bucketName+"/"+prefixName)
+		fmt.Println(err)
+	} else {
+		fmt.Println(resposta.Contents)
+	}
+
 }
 
 func DeleteObject(s3_client *s3.Client, bucketName string, objectName string) {
