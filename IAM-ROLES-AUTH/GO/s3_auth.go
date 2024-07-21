@@ -24,7 +24,7 @@ func main() {
 	case "--listbkts":
 		ListBuckets(S3Client(os.Args[2]))
 	case "--list":
-		ListObjects(S3Client(os.Args[3]), os.Args[2], os.Args[3])
+		ListObjects(S3Client("us-east-1"), os.Args[2], os.Args[3])
 	case "--upload":
 		// awsUploadObject(os.Args[2], os.Args[3])
 	case "--download":
@@ -126,7 +126,9 @@ func ListObjects(s3_client *s3.Client, bucketName string, prefixName string) {
 		fmt.Println("Falha ao listar os objetos em ", bucketName+"/"+prefixName)
 		fmt.Println(err)
 	} else {
-		fmt.Println(resposta.Contents)
+		for _, objeto := range resposta.Contents {
+			fmt.Println(*objeto.Key)
+		}
 	}
 
 }
