@@ -16,13 +16,13 @@ func main() {
 	case "--help":
 		DocHelp()
 	case "--create":
-		CreateBucket(S3Client(os.Args[3]), os.Args[2], os.Args[3])
+		CreateBucket(S3Client("us-east-1"), os.Args[2], os.Args[3])
 	case "--delbkt":
-		DeleteBucket(S3Client(os.Args[3]), os.Args[2], os.Args[3])
+		DeleteBucket(S3Client("us-east-1"), os.Args[2], os.Args[3])
 	case "--del":
-		DeleteObject(S3Client(os.Args[3]), os.Args[2], os.Args[3])
+		DeleteObject(S3Client("us-east-1"), os.Args[2], os.Args[3])
 	case "--listbkts":
-		ListBuckets(S3Client(os.Args[2]))
+		ListBuckets(S3Client("us-east-1"))
 	case "--list":
 		ListObjects(S3Client("us-east-1"), os.Args[2], os.Args[3])
 	case "--upload":
@@ -134,5 +134,14 @@ func ListObjects(s3_client *s3.Client, bucketName string, prefixName string) {
 }
 
 func DeleteObject(s3_client *s3.Client, bucketName string, objectName string) {
-	fmt.Println("Em desenvolvimento...")
+	_, err := s3_client.DeleteObject(context.TODO(), &s3.DeleteObjectInput{
+		Bucket: aws.String(bucketName),
+		Key:    aws.String(objectName),
+	})
+
+	if err != nil {
+		fmt.Printf("Falha ao deletar o objeto %s no Bucket %s: %s\n", objectName, bucketName, err)
+	} else {
+		fmt.Printf("O objeto %s foi deletado com sucesso no Bucket %s\n", objectName, bucketName)
+	}
 }
