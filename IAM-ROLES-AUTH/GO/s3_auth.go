@@ -68,9 +68,9 @@ func DocHelp() {
 
 	Sintaxe:
 		--create / --delbkt --> go s3_no_auth.go --parâmetro nome_do_bucket região
-		--del / --upload / --download --> go s3_no_auth.go --parâmetro nome_do_bucket path_com_nome_do_arquivo.txt
-		--list --> go s3_no_auth.go --parâmetro nome_do_bucket path_diretorio(opcional)
-		--listbkt --> s3_no_auth.go --parâmetro
+		--del / --upload / --download --> go s3_no_auth.go --parâmetro nome_do_bucket path_com_nome_do_arquivo.txt região
+		--list --> go s3_no_auth.go --parâmetro nome_do_bucket path_diretorio região
+		--listbkt --> s3_no_auth.go --parâmetro região
 	`
 
 	fmt.Println(doc)
