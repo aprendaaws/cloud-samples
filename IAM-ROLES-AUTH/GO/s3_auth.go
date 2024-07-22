@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"fmt"
+	"io"
 	"os"
 
 	"github.com/aws/aws-sdk-go-v2/aws"
@@ -26,10 +27,9 @@ func main() {
 	case "--list":
 		ListObjects(S3Client("us-east-1"), os.Args[2], os.Args[3])
 	case "--upload":
-		fmt.Println(os.Args[2], os.Args[3], os.Args[4])
 		UploadObject(S3Client("us-east-1"), os.Args[2], os.Args[3], os.Args[4])
 	case "--download":
-		// awsDownloadObject(os.Args[2], os.Args[3])
+		DownloadObject(S3Client("us-east-1"), os.Args[2], os.Args[3], os.Args[4])
 	default:
 		fmt.Println("Parâmetro Inválido!")
 		DocHelp()
@@ -165,4 +165,33 @@ func UploadObject(s3_client *s3.Client, bucketName string, objectPath string, fi
 	} else {
 		fmt.Printf("O objeto %s foi carregado com sucesso no Bucket %s\n", objectPath+fileName, bucketName)
 	}
+}
+
+func DownloadObject(s3_client *s3.Client, bucketName string, objectPath string, fileName string) error {
+	ctx := context.TODO()
+	objInput := &s3.GetObjectInput{
+		Bucket: aws.String(bucketName),
+		Key:    aws.String(objectPath + fileName),
+	}
+
+	resp, err := s3_client.GetObject(ctx, objInput)
+	if err != nil {
+		return err
+	}
+	defer resp.Body.Close()
+
+	file, err := os.Create(fileName)
+	if err != nil {
+		return err
+	}
+	defer file.Close()
+
+	_, err = io.Copy(file, resp.Body)
+	if err != nil {
+		return err
+	}
+
+	fmt.Printf("O arquivo %s foi baixado com sucesso!\n", objectPath+fileName)
+
+	return nil
 }
